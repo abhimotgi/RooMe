@@ -11,9 +11,6 @@ router.get('/', (req, res) => {
 router.post('/createRoom', (req, res) => {
   Room.createRoom(req.body.roomName)
     .then((room) => {
-/*      var payload = {
-        room: room
-      };*/
       var token = jwt.sign({room: room}, 'secret');
       res.json({success: true, token: token});
     })
@@ -26,12 +23,6 @@ router.post('/joinRoom', (req, res) => {
   Room.roomExists(req.body.roomName)
     .then((room) => {
       if (room) {
-/*        var payload = {
-          room: room
-        };
-        var token = jwt.sign(payload, 'secret');*/
-        // res.session.token = token;
-        // res.json({success: true, token: token, room: room});
         var token = jwt.sign({room: room}, 'secret');
         res.json({success: true, token: token});
       } else {
@@ -48,17 +39,6 @@ router.get('/getRooms', (req, res) => {
     .then((rooms) => {
       res.json(rooms);
     })
-});
-
-router.get('/me', (req, res) => {
-  var token = req.headers['x-access-token'];
-  if (!token) {
-    res.json({success: false, message: 'No token provided'});
-  } else {
-    jwt.verify(token, 'secret', (err, decoded) => {
-      res.json(decoded);
-    });
-  }
 });
 
 

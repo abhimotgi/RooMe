@@ -20,16 +20,12 @@ router.get('/getItems', (req, res) => {
     })
 });
 
+router.post('/toggleItem/:id', (req, res) => {
+  ToDoItem.toggleItem(req.params.id)
+    .then((item) => {
+      res.json(item);
+    })
+});
 
-/*router.get('/getItems', (req, res) => {
-  var token = req.headers['x-access-token'];
-  if (!token) {
-    res.json({success: false, message: 'No token provided'});
-  } else {
-    jwt.verify(token, 'secret', (err, decoded) => {
-      ToDoItem.getItems()
-    });
-  }
-});*/
 
 module.exports = router;

@@ -10,7 +10,6 @@ var toDoSchema = new Schema({
   	required: true,
   	ref: 'Room'
   }
-  // room: String
 });
 
 toDoSchema.statics.addItem = function (description, completed, author, roomId) {
@@ -26,5 +25,13 @@ toDoSchema.statics.addItem = function (description, completed, author, roomId) {
 toDoSchema.statics.getItems = function (roomId) {
 	return this.find({roomId: roomId});
 };
+
+toDoSchema.statics.toggleItem = function (itemId) {
+	return this.findOne({_id: itemId})
+		.then((item) => {
+			item.completed = item.completed === 0 ? 1 : 0;
+			return item.save();
+		});
+}
 
 module.exports = mongoose.model('ToDoItem', toDoSchema);
