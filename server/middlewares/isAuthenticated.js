@@ -2,17 +2,17 @@ var jwt = require('jsonwebtoken');
 var Room = require('../models/Room');
 
 var isAuthenticated = (req, res, next) => {
-  var token = req.body.token || req.query.token;
+  var token = req.body.token || req.query.token || req.headers['auth-token'] || req.headers['x-access-token'];
+  console.log('is authenticated', token);
   if (token) {
     jwt.verify(token, 'secret', (err, decoded) => {
       if (err) {
         return res.json({success: false, message: 'Failed to authenticate token.'});
       } else {
-        Room.findOne({_id: decoded.id}, (err, room) => {
-          if (err) throw err;
-          req.room = room;
-          next();
-        });
+        console.log('decoded', decoded);
+        req.room = decoded.room;
+        console.log(req.room);
+        next();
       }
     });
   } else {

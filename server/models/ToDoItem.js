@@ -5,25 +5,26 @@ var toDoSchema = new Schema({
   description: {type: String, required: true},
   completed: Number,
   author: String,
-  room: {
+  roomId: {
   	type: Schema.ObjectId,
   	required: true,
   	ref: 'Room'
   }
+  // room: String
 });
 
-toDoSchema.statics.addItem = (description, completed, author, room) => {
+toDoSchema.statics.addItem = function (description, completed, author, roomId) {
 	let newItem = new this({
-		description,
-		completed,
-		author,
-		room
+		description: description,
+		completed: completed,
+		author: author,
+		roomId: roomId
 	});
 	return newItem.save();
 };
 
-toDoSchema.methods.getItems = (room) => {
-	return this.find({room: room});
+toDoSchema.statics.getItems = function (roomId) {
+	return this.find({roomId: roomId});
 };
 
 module.exports = mongoose.model('ToDoItem', toDoSchema);
