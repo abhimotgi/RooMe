@@ -1,29 +1,40 @@
-import React from 'react';
+import React,{Component} from 'react';
+import { connect } from 'react-redux';
+import { getRooms } from '../actions/roomActions';
 
-class XRoom extends React.Component {
-  // state = {rooms: []};
-
+class XRoom extends Component {
   constructor(props) {
     super(props);
   }
 
-
-
   componentDidMount() {
+    this.props.getRooms();
   }
 
   render() {
-    var rooms = this.state.rooms.map(function (room) {
-      return <li>room.roomName</li>;
-    });
+    console.log('THIS', this);
+    // var rooms = this.props.rooms.map(function (room, index) {
+    //   return <h3 key={index}>{room.description}</h3>;
+    // });
     return (
       <div>
-        <ul>
-        </ul>
+        <h1> To Do List </h1>
       </div>
     );
   }
-
 }
 
-export default XRoom;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getRooms: () => dispatch(getRooms())
+  }
+};
+
+const mapStateToProps = (state) => {
+  return {
+    rooms: state.rooms
+  }
+
+  // return state;
+}
+export default connect(mapStateToProps, mapDispatchToProps)(XRoom);

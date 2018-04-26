@@ -19,12 +19,26 @@ class App extends Component {
     return (
       <div className='container-fluid'>
         <NavBar />
-        <Switch>
-          <Route path='/rooms' component={XRoom}/>
-          <Route path='/items' component={ToDoList}/>
-          <Route component={ToDoList}/>
-        </Switch>
+        <Route exact path="/" component={Rooms} />
 
+
+        // <Switch>
+          // <Route path='/rooms' component={XRoom}/>
+          // <Route path='/items' component={ToDoList}/>
+          // <Route component={XRoom}/>
+        // </Switch>
+
+      </div>
+    );
+  }
+}
+
+
+class Room extends Component {
+  render () {
+    return (
+      <div className="Room">
+        <h3>{this.props.roomName}</h3>
       </div>
     );
   }

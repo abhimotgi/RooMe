@@ -1,4 +1,4 @@
-import authenticatedRequest from '../utils/authenticatedRequest';
+// import authenticatedRequest from '../utils/authenticatedRequest';
 
 export const LOGIN_FUL = 'LOGIN_FUL';
 export const LOGIN_REJ = 'LOGIN_REJ';
@@ -7,6 +7,9 @@ export const REGISTER_FUL = 'REGISTER_FUL';
 export const REGISTER_REJ = 'REGISTER_REJ';
 
 export const LOGOUT_FUL = 'LOGOUT_FUL';
+
+export const GETROOMS_FUL = 'GETROOMS_FUL';
+export const GETROOMS_REJ = 'GETROOMS_REJ';
 
 // in this section, we're defining our synchronous action creators
 
@@ -45,13 +48,30 @@ function registerError(message) {
 
 
 export function getRooms() {
-    let config = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      } // this line is important, if this content-type is not set it wont work
+  let config = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    } // this line is important, if this content-type is not set it wont work
   };
-  return dispatch => fetch('/api/getRooms', )
+  return dispatch => fetch('/api/getRooms', config)
+    .then(res => {
+      // console.log('ROOM ACTIONS', res.json());
+      return res.json();
+    })
+    .then((resp) => {
+      // console.log('ROOM ACTIONS RESP', resp);
+      dispatch({
+        type: 'GETROOMS_FUL',
+        data: resp
+      });
+    })
+    .catch((err) => {
+      dispatch({
+        type: GETROOMS_REJ,
+        error: err
+      });
+    });
 }
 
 export function createRoom(info) {

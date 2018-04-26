@@ -12,7 +12,7 @@ class ToDoList extends Component {
 
   componentDidMount() {
     this.props.getItems();
-    console.log('printing this', this);
+    // console.log('printing this', this);
   }
 
   render() {
@@ -36,6 +36,11 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const mapStateToProps = (state) => {
-  return state;
+  return {
+    items: state.items
+  }
+
+  // return state;
+
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ToDoList);
