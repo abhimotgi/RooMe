@@ -20,6 +20,13 @@ roomSchema.statics.roomExists = function (roomName, roomPassword) {
     })
 };
 
+roomSchema.statics.getRoomInfo = function (roomId) {
+  return this.findOne({_id: roomId})
+    .then((room) => {
+      return room;
+    })
+};
+
 roomSchema.statics.getRooms = function () {
   return this.find();
 };

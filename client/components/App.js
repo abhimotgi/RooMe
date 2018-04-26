@@ -52,10 +52,52 @@ class ItemPage extends Component {
   render() {
     return (
       <div>
-        <h1>List of Items</h1>
-        <ItemList />
+        <RoomHeader />
+        <div className='container'>
+          <div className='row'>
+            <div className='col-sm'>
+              <ItemList />
+            </div>
+            <div className='col-sm'>
+              <AddItemBox />
+            </div>
+          </div>
+        </div>
       </div>
     );
+  }
+}
+
+class RoomHeader extends Component {
+  constructor() {
+    super();
+    this.state = {
+      roomName: ''
+    };
+    // this.setState({roomName: ''});
+    // this.state.roomName = '';
+  }
+
+  componentDidMount() {
+    fetch('/api/getRoomInfo', {
+      credentials: 'include',
+      headers: {'auth-token': localStorage.getItem('token')}
+    })
+    .then(res => {
+      // console.log('RES', res);
+      return res.json();
+    })
+    .then(resp => {
+      // console.log('resp', resp);
+      console.log('RESP', resp);
+      this.setState({roomName: resp.roomName});
+    });
+  }
+
+  render() {
+      return(<div className='page-header'>
+        <h1>{this.state.roomName}</h1>
+      </div>);    
   }
 }
 
@@ -63,6 +105,7 @@ class ItemList extends Component {
   constructor() {
     super();
     this.state = { items : [] };
+    addedItem = addedItem.bind(this);
   }
 
   componentDidMount() {
@@ -79,24 +122,121 @@ class ItemList extends Component {
     var items;
     if (this.state.items) {
       items = this.state.items.map(function(item, index) {
-        return <Item key={index} description={item.description}/>;
+        return <Item key={index} completed={item.completed} itemId={item._id} description={item.description}/>;
       });
     }
     
 
     return (
       <div>
-        {items}
+      <h2>List of Items</h2>
+        <ul className='list-group'>
+          {items}
+        </ul>
       </div>
     );
   }
 }
 
-class Item extends Component {
-  render () {
+function addedItem(item) {
+  var newItems = this.state.items;
+  newItems.push(item);
+  this.setState({items: newItems});
+}
+
+class AddItemBox extends Component {
+  constructor() {
+    super();
+    this.addItem = this.addItem.bind(this);
+  }
+
+  addItem(event) {
+    event.preventDefault();
+    fetch('/api/addItem',
+    {
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify({
+        'content': event.target.content.value
+      }),
+      headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token')
+      }
+    })
+    .then(res => {
+      return res.json();
+    })
+    .then(resp => {
+      addedItem(resp);
+    })
+    .then(event.target.reset());
+
+  }
+
+  render() {
     return (
-      <div className="Item">
-        <p>{this.props.description}</p>
+      <div>
+        <h2>Add an Item</h2>
+        <form onSubmit={this.addItem}>
+          <p>Description</p>
+          <textarea name='content'/>
+          <br/>
+          <input type='submit'/>
+        </form>
+      </div>
+    );
+   }
+}
+
+class Item extends Component {
+
+  constructor() {
+    super();
+    this.toggleItem = this.toggleItem.bind(this);
+    // this.state.completed = this.props.completed;
+    // var c = this.props.completed;
+    this.state = {
+      completed: 0
+    }
+  }
+
+  componentDidMount() {
+    this.setState({completed: this.props.completed});
+  }
+
+  toggleItem(event) {
+    console.log(this.props.itemId);
+    fetch('/api/toggleItem/' + this.props.itemId,
+    {
+      method: 'POST', 
+      credentials: 'include', 
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token')
+      }
+    })
+    .then(res => {
+      return res.json();
+    })
+    .then(resp => {
+      this.setState({ completed: resp.completed });
+    })
+  }
+
+  render () {
+    var item;
+    if (this.state.completed === 0) {
+      item =  <a style={{cursor: 'pointer'}} onClick={this.toggleItem}>{this.props.description}</a>;
+    } else {
+      item =  <a style={{cursor: 'pointer', textDecorationLine: 'line-through'}} onClick={this.toggleItem}>{this.props.description}</a>
+    }
+
+    return (
+      <div className='Item'>
+        <li className='list-group-item'>
+         {item}
+        </li>
       </div>
     );
   }

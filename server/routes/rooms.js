@@ -19,6 +19,7 @@ router.post('/createRoom', (req, res) => {
     });
 });
 
+
 router.post('/joinRoom', (req, res) => {
   Room.roomExists(req.body.roomName)
     .then((room) => {
