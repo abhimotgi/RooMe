@@ -10,7 +10,7 @@ class NavBar extends Component {
   render() {
     return (
       <nav className="navbar navbar-expand-sm navbar-light bg-light">
-            <a className="navbar-brand" href="#">roome</a>
+            <a className="navbar-brand" href="/">roome</a>
               <ul className="navbar-nav">
                 <li className="nav-item">
                   <Link className="nav-link" to="/rooms">

@@ -19,7 +19,7 @@ mongoose.Promise = global.Promise;
 var roomsRouter = require('./routes/rooms.js')
 var itemsRouter = require('./routes/items.js')
 app.use('/api', roomsRouter);
-app.use('/api', itemsRouter);
+app.use('/api', isAuthenticated, itemsRouter);
 
 app.get('/', (req, res) => {
   res.render('index')
