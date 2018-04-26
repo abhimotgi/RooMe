@@ -3,16 +3,13 @@ import React from 'react';
 class XRoom extends React.Component {
   // state = {rooms: []};
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
   }
 
 
 
   componentDidMount() {
-    fetch('/getRooms')
-      .then(res => res.json())
-      .then(rooms => this.setState({rooms}));
   }
 
   render() {
@@ -22,7 +19,6 @@ class XRoom extends React.Component {
     return (
       <div>
         <ul>
-          {rooms}
         </ul>
       </div>
     );

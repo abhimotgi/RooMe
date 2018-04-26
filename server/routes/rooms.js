@@ -4,12 +4,12 @@ var bodyParser = require('body-parser');
 var Room = require('../models/Room');
 var jwt = require('jsonwebtoken');
 
-router.get('/', (req, res) => {
-  res.render('index')
-});
+// router.get('/', (req, res) => {
+//   res.render('index')
+// });
 
 router.post('/createRoom', (req, res) => {
-  Room.createRoom(req.body.roomName)
+  Room.createRoom(req.body.roomName, req.body.roomPassword)
     .then((room) => {
       var token = jwt.sign({room: room}, 'secret');
       res.json({success: true, token: token});
