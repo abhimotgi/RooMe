@@ -11,7 +11,7 @@ var jwt = require('jsonwebtoken');
 router.post('/createRoom', (req, res) => {
   Room.createRoom(req.body.roomName, req.body.roomPassword)
     .then((room) => {
-      var token = jwt.sign({room: room}, 'secret');
+      var token = jwt.sign({room: room, nickname: req.body.nickname}, 'secret');
       res.json({success: true, token: token});
     })
     .catch((err) => {
@@ -24,7 +24,22 @@ router.post('/joinRoom', (req, res) => {
   Room.roomExists(req.body.roomName)
     .then((room) => {
       if (room) {
-        var token = jwt.sign({room: room}, 'secret');
+        var token = jwt.sign({room: room, nickname: req.body.nickname}, 'secret');
+        res.json({success: true, token: token});
+      } else {
+        res.json({success: false, message: 'Invalid room name'});
+      }
+    })
+    .catch((err) => {
+      res.json({success: false, message: 'There was an error joining the room'});
+    });
+});
+
+router.post('/loginRoom', (req, res) => {
+  Room.loginRoom(req.body.roomName, req.body.roomPassword)
+    .then((room) => {
+      if (room) {
+        var token = jwt.sign({room: room, nickname: req.body.nickname}, 'secret');
         res.json({success: true, token: token});
       } else {
         res.json({success: false, message: 'Invalid room name'});

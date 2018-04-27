@@ -5,7 +5,7 @@ var ToDoItem = require('../models/ToDoItem');
 var Room = require('../models/Room');
 
 router.post('/addItem', (req, res) => {
-  ToDoItem.addItem(req.body.content, 0, 'admin', req.room._id)
+  ToDoItem.addItem(req.body.content, 0, req.nickname, req.room._id)
     .then((item) => {
       res.json(item);
     });
@@ -51,6 +51,15 @@ router.get('/getAllItems', (req, res) => {
     })
 });
 
+router.post('/importantItem/:id', (req, res) => {
+  ToDoItem.importantItem(req.params.id)
+    .then((item) => {
+      res.json(item);
+    })
+    .catch((err) => {
+      res.json(err);
+    })
+});
 
 
 router.post('/toggleItem/:id', (req, res) => {
@@ -62,6 +71,8 @@ router.post('/toggleItem/:id', (req, res) => {
       res.json(err);
     })
 });
+
+
 
 
 module.exports = router;

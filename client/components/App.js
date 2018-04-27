@@ -122,7 +122,7 @@ class ItemList extends Component {
     var items;
     if (this.state.items) {
       items = this.state.items.map(function(item, index) {
-        return <Item key={index} completed={item.completed} itemId={item._id} description={item.description}/>;
+        return <Item key={index} completed={item.completed} author={item.author} itemId={item._id} description={item.description}/>;
       });
     }
     
@@ -194,19 +194,39 @@ class Item extends Component {
   constructor() {
     super();
     this.toggleItem = this.toggleItem.bind(this);
+    this.importantItem = this.importantItem.bind(this);
     // this.state.completed = this.props.completed;
     // var c = this.props.completed;
     this.state = {
-      completed: 0
-    }
+      completed: 0,
+      important: 0
+    };
   }
 
   componentDidMount() {
     this.setState({completed: this.props.completed});
+    // this.setState({important: this.props.important});
+  }
+
+  importantItem(event) {
+    fetch('/api/importantItem/' + this.props.itemId,
+    {
+      method: 'POST', 
+      credentials: 'include', 
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token')
+      }
+    })
+    .then(res => {
+      return res.json();
+    })
+    .then(resp => {
+      this.setState({ important : resp.important });
+    });
   }
 
   toggleItem(event) {
-    console.log(this.props.itemId);
     fetch('/api/toggleItem/' + this.props.itemId,
     {
       method: 'POST', 
@@ -221,8 +241,12 @@ class Item extends Component {
     })
     .then(resp => {
       this.setState({ completed: resp.completed });
-    })
+    });
   }
+
+  
+
+
 
   render () {
     var item;
@@ -232,10 +256,19 @@ class Item extends Component {
       item =  <a style={{cursor: 'pointer', textDecorationLine: 'line-through'}} onClick={this.toggleItem}>{this.props.description}</a>
     }
 
+    var important = '';
+    if (this.state.important === 1) {
+      important = '★★★';
+    }
+
     return (
       <div className='Item'>
         <li className='list-group-item'>
-         {item}
+          {item} {important}
+          <br/>
+          <i>created by {this.props.author}</i>
+          <br/>
+          <i><a stype={{cursor: 'pointer'}} onClick={this.importantItem}>mark as important</a></i>
         </li>
       </div>
     );
@@ -362,7 +395,7 @@ class LoginRoom extends Component {
     // const { history } = this.props;
     // const { location } = this.props;
     event.preventDefault();
-    fetch('/api/joinRoom', 
+    fetch('/api/loginRoom', 
       {
         method: 'POST', 
         credentials: 'include', 
@@ -387,6 +420,9 @@ class LoginRoom extends Component {
         if (localStorage.token !== 'undefined') {
           this.setState({ loggedIn : true });
         }
+      })
+      .catch((err) => {
+        alert(err);
       });
       
   }

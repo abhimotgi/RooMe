@@ -26881,7 +26881,7 @@ var ItemList = function (_Component5) {
       var items;
       if (this.state.items) {
         items = this.state.items.map(function (item, index) {
-          return _react2.default.createElement(Item, { key: index, completed: item.completed, itemId: item._id, description: item.description });
+          return _react2.default.createElement(Item, { key: index, completed: item.completed, author: item.author, itemId: item._id, description: item.description });
         });
       }
 
@@ -26982,10 +26982,12 @@ var Item = function (_Component7) {
     var _this9 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
 
     _this9.toggleItem = _this9.toggleItem.bind(_this9);
+    _this9.importantItem = _this9.importantItem.bind(_this9);
     // this.state.completed = this.props.completed;
     // var c = this.props.completed;
     _this9.state = {
-      completed: 0
+      completed: 0,
+      important: 0
     };
     return _this9;
   }
@@ -26994,13 +26996,31 @@ var Item = function (_Component7) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.setState({ completed: this.props.completed });
+      // this.setState({important: this.props.important});
+    }
+  }, {
+    key: 'importantItem',
+    value: function importantItem(event) {
+      var _this10 = this;
+
+      fetch('/api/importantItem/' + this.props.itemId, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token')
+        }
+      }).then(function (res) {
+        return res.json();
+      }).then(function (resp) {
+        _this10.setState({ important: resp.important });
+      });
     }
   }, {
     key: 'toggleItem',
     value: function toggleItem(event) {
-      var _this10 = this;
+      var _this11 = this;
 
-      console.log(this.props.itemId);
       fetch('/api/toggleItem/' + this.props.itemId, {
         method: 'POST',
         credentials: 'include',
@@ -27011,7 +27031,7 @@ var Item = function (_Component7) {
       }).then(function (res) {
         return res.json();
       }).then(function (resp) {
-        _this10.setState({ completed: resp.completed, description: 'moo' });
+        _this11.setState({ completed: resp.completed });
       });
     }
   }, {
@@ -27032,13 +27052,37 @@ var Item = function (_Component7) {
         );
       }
 
+      var important = '';
+      if (this.state.important === 1) {
+        important = '★★★';
+      }
+
       return _react2.default.createElement(
         'div',
         { className: 'Item' },
         _react2.default.createElement(
           'li',
           { className: 'list-group-item' },
-          item
+          item,
+          ' ',
+          important,
+          _react2.default.createElement('br', null),
+          _react2.default.createElement(
+            'i',
+            null,
+            'created by ',
+            this.props.author
+          ),
+          _react2.default.createElement('br', null),
+          _react2.default.createElement(
+            'i',
+            null,
+            _react2.default.createElement(
+              'a',
+              { stype: { cursor: 'pointer' }, onClick: this.importantItem },
+              'mark as important'
+            )
+          )
         )
       );
     }
@@ -27080,21 +27124,21 @@ var RoomList = function (_Component9) {
   function RoomList() {
     _classCallCheck(this, RoomList);
 
-    var _this12 = _possibleConstructorReturn(this, (RoomList.__proto__ || Object.getPrototypeOf(RoomList)).call(this));
+    var _this13 = _possibleConstructorReturn(this, (RoomList.__proto__ || Object.getPrototypeOf(RoomList)).call(this));
 
-    _this12.state = { rooms: [] };
-    return _this12;
+    _this13.state = { rooms: [] };
+    return _this13;
   }
 
   _createClass(RoomList, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var _this13 = this;
+      var _this14 = this;
 
       fetch('/api/getRooms', { credentials: 'include' }).then(function (res) {
         return res.json();
       }).then(function (resJson) {
-        _this13.setState({ rooms: resJson });
+        _this14.setState({ rooms: resJson });
       });
     }
   }, {
@@ -27129,17 +27173,17 @@ var CreateRoom = function (_Component10) {
   function CreateRoom() {
     _classCallCheck(this, CreateRoom);
 
-    var _this14 = _possibleConstructorReturn(this, (CreateRoom.__proto__ || Object.getPrototypeOf(CreateRoom)).call(this));
+    var _this15 = _possibleConstructorReturn(this, (CreateRoom.__proto__ || Object.getPrototypeOf(CreateRoom)).call(this));
 
-    _this14.createRoom = _this14.createRoom.bind(_this14);
-    _this14.state = { loggedIn: false };
-    return _this14;
+    _this15.createRoom = _this15.createRoom.bind(_this15);
+    _this15.state = { loggedIn: false };
+    return _this15;
   }
 
   _createClass(CreateRoom, [{
     key: 'createRoom',
     value: function createRoom(event) {
-      var _this15 = this;
+      var _this16 = this;
 
       var bigThis = this;
       event.preventDefault();
@@ -27160,7 +27204,7 @@ var CreateRoom = function (_Component10) {
         localStorage.setItem('token', resp.token);
       }).then(function () {
         if (localStorage.token !== 'undefined') {
-          _this15.setState({ loggedIn: true });
+          _this16.setState({ loggedIn: true });
         }
       });
     }
@@ -27220,22 +27264,22 @@ var LoginRoom = function (_Component11) {
   function LoginRoom() {
     _classCallCheck(this, LoginRoom);
 
-    var _this16 = _possibleConstructorReturn(this, (LoginRoom.__proto__ || Object.getPrototypeOf(LoginRoom)).call(this));
+    var _this17 = _possibleConstructorReturn(this, (LoginRoom.__proto__ || Object.getPrototypeOf(LoginRoom)).call(this));
 
-    _this16.login = _this16.login.bind(_this16);
-    _this16.state = { loggedIn: false };
-    return _this16;
+    _this17.login = _this17.login.bind(_this17);
+    _this17.state = { loggedIn: false };
+    return _this17;
   }
 
   _createClass(LoginRoom, [{
     key: 'login',
     value: function login(event) {
-      var _this17 = this;
+      var _this18 = this;
 
       // const { history } = this.props;
       // const { location } = this.props;
       event.preventDefault();
-      fetch('/api/joinRoom', {
+      fetch('/api/loginRoom', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify({
@@ -27253,8 +27297,10 @@ var LoginRoom = function (_Component11) {
         // event.target.reset();
       }).then(function () {
         if (localStorage.token !== 'undefined') {
-          _this17.setState({ loggedIn: true });
+          _this18.setState({ loggedIn: true });
         }
+      }).catch(function (err) {
+        alert(err);
       });
     }
   }, {
@@ -27353,28 +27399,6 @@ var NavBar = function (_Component) {
           'a',
           { className: 'navbar-brand', href: '/' },
           'roome'
-        ),
-        _react2.default.createElement(
-          'ul',
-          { className: 'navbar-nav' },
-          _react2.default.createElement(
-            'li',
-            { className: 'nav-item' },
-            _react2.default.createElement(
-              _reactRouterDom.Link,
-              { className: 'nav-link', to: '/rooms' },
-              'Rooms'
-            )
-          ),
-          _react2.default.createElement(
-            'li',
-            { className: 'nav-item' },
-            _react2.default.createElement(
-              _reactRouterDom.Link,
-              { className: 'nav-link', to: '/items' },
-              'My Room'
-            )
-          )
         )
       );
     }

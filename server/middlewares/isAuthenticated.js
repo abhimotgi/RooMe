@@ -11,6 +11,7 @@ var isAuthenticated = (req, res, next) => {
       } else {
         // console.log('decoded', decoded);
         req.room = decoded.room;
+        req.nickname = decoded.nickname;
         // console.log(req.room);
         next();
       }
